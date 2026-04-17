@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Add this line if classes still aren't showing up */
+@source "../src";
+
+@theme {
+  --color-brand-red: #d2042d;
+  --font-roboto: "Roboto Slab", serif;
+}
+
+@layer base {
+  body {
+    background-color: #f9f9f9;
+    /* 16px padding on mobile, 80px on desktop */
+    @apply px-4 md:px-20; 
+  }
+}
+
+@theme {
+  --animate-bounce-slow: bounce-slow 5s ease-in-out infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
