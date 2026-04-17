@@ -5,17 +5,17 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Add from './pages/Add'
 import List from './pages/List'
 import Orders from './pages/Orders'
-import Users from './pages/Users' // Added the Users page we discussed
+import Users from './pages/Users' 
 import Login from './components/Login/Login'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// 1. Updated to your local backend URL (usually port 4000 for MERN)
-export const backendUrl = "http://localhost:4000"; 
+// --- THE FIX IS HERE ---
+// This will use your Render URL on Vercel and fallback to localhost only if the variable is missing
+export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"; 
 export const currency = "₦"; 
 
 const App = () => {
-
   const [token, setToken] = useState(localStorage.getItem('token') || '');
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const App = () => {
     <div className='bg-gray-50 min-h-screen'>
       <ToastContainer />
       {token === "" 
-        ? <Login setToken={setToken} /> 
+        ? <Login setToken={setToken} url={backendUrl} /> // Added url prop to Login too!
         : <>
             <Navbar setToken={setToken} />
             <hr />
@@ -35,7 +35,6 @@ const App = () => {
               <div className='flex-1 p-8 sm:p-12'>
                 <Routes>
                   <Route path='/' element={<Navigate to="/add" />} />
-                  {/* 2. Passing backendUrl and token to all components */}
                   <Route path='/add' element={<Add token={token} url={backendUrl} />} />
                   <Route path='/list' element={<List token={token} url={backendUrl} />} />
                   <Route path='/orders' element={<Orders token={token} url={backendUrl} />} />
