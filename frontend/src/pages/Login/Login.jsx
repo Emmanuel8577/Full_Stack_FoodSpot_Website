@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { HiEye, HiEyeOff } from "react-icons/hi"; // Professional eye icons
+import { HiEye, HiEyeOff } from "react-icons/hi"; 
 import restaurantBg from "../../assets/images/restaurant.jpg";
 import { FoodContext } from "../../context/FoodContext";
 import axios from "axios";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
-  const [showPassword, setShowPassword] = useState(false); // Toggle state
+  const [showPassword, setShowPassword] = useState(false); 
   const { token, setToken, navigate, url } = useContext(FoodContext);
 
   // Form States
@@ -20,6 +20,7 @@ const Login = () => {
     e.preventDefault();
     try {
       if (currentState === "Sign Up") {
+        // Fixed: Ensuring the endpoint points to your Render URL via context
         const response = await axios.post(`${url}/api/user/register`, { name, email, password });
           
         if (response.data.success) {
@@ -30,10 +31,12 @@ const Login = () => {
           toast.error(response.data.message);
         }
       } else {
-        const response = await axios.post(`$${url}/api/user/login`, {
+        // FIXED: Removed the double dollar sign typo ($$url)
+        const response = await axios.post(`${url}/api/user/login`, {
           email,
           password,
         });
+        
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
@@ -47,20 +50,13 @@ const Login = () => {
       const errorMsg = error.response?.data?.message;
 
       if (currentState === "Login") {
-        // Only show this specific fallback if we are actually trying to log in
-        if (
-          errorMsg === "User doesn't exist" ||
-          errorMsg === "Invalid credentials"
-        ) {
+        if (errorMsg === "User doesn't exist" || errorMsg === "Invalid credentials") {
           toast.error("Invalid email or password");
         } else {
           toast.error(errorMsg || "Login failed. Please try again.");
         }
       } else {
-        // If we are in 'Sign Up' mode, show the actual error (like 'User already exists')
-        toast.error(
-          errorMsg || "Registration failed. Please check your details.",
-        );
+        toast.error(errorMsg || "Registration failed. Please check your details.");
       }
     }
   };
@@ -113,7 +109,6 @@ const Login = () => {
           />
         </div>
 
-        {/* Password Input with Toggle */}
         <div className="w-full relative">
           <input
             onChange={(e) => setPassword(e.target.value)}

@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from 'react';
-import { FoodContext } from '../context/FoodContext'; // Ensure path is correct
+import { FoodContext } from '../context/FoodContext';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Verify = () => {
-    // Check if your context uses 'url' or 'backendUrl' - standardizing to 'url'
-    const { url, token, clearCart} = useContext(FoodContext); 
+    // Standardized to 'url' to match your updated FoodContext
+    const { url, token, clearCart } = useContext(FoodContext); 
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -15,9 +15,14 @@ const Verify = () => {
 
     const verifyPayment = async () => {
         try {
+            // We need the token and the orderId from the URL to proceed
             if (!token) return;
+            if (!orderId) {
+                navigate('/');
+                return;
+            }
 
-            // Ensure this endpoint matches your backend route exactly
+            // Hits your Render backend to confirm the Stripe session status
             const response = await axios.post(`${url}/api/order/verifyStripe`, 
                 { success, orderId }, 
                 { headers: { token } }
@@ -28,7 +33,7 @@ const Verify = () => {
                 toast.success("Payment successful!");
                 navigate('/orders');
             } else {
-                toast.error("Payment failed. Order cancelled.");
+                toast.error("Payment failed or cancelled.");
                 navigate('/cart');
             }
         } catch (error) {
@@ -39,6 +44,7 @@ const Verify = () => {
     };
 
     useEffect(() => {
+        // Trigger verification once the component mounts and token is available
         if (token) {
             verifyPayment();
         }
@@ -46,7 +52,11 @@ const Verify = () => {
 
     return (
         <div className='min-h-[60vh] flex items-center justify-center'>
-            <div className="w-20 h-20 border-4 border-gray-300 border-t-orange-600 rounded-full animate-spin"></div>
+            {/* Professional Spinner */}
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-16 h-16 border-4 border-gray-200 border-t-orange-600 rounded-full animate-spin"></div>
+                <p className="text-gray-500 font-medium animate-pulse">Verifying your payment...</p>
+            </div>
         </div>
     );
 };

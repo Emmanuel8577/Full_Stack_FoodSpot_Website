@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 export const FoodContext = createContext();
 
 const FoodContextProvider = (props) => {
-  // --- MOVE THIS LINE HERE (Inside the component) ---
   const navigate = useNavigate();
 
+  // Define the base URL using Vite's environment variable
+  const url = import.meta.env.VITE_BACKEND_URL;
+  
   const currency = "₦";
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const [orders, setOrders] = useState([]);
@@ -78,15 +79,13 @@ const FoodContextProvider = (props) => {
 
     try {
       const response = await axios.post(
-        `${backendUrl}/api/order/userorders`,
+        `${url}/api/order/userorders`, // Updated to use url
         {},
         { headers: { token } },
       );
 
       if (response.data.success) {
-        // We check for .orders OR .data to be safe
         const fetchedOrders = response.data.orders || response.data.data;
-
         console.log("Orders extracted:", fetchedOrders);
 
         if (fetchedOrders) {
@@ -104,7 +103,7 @@ const FoodContextProvider = (props) => {
 
   const fetchProductsList = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/food/list`);
+      const response = await axios.get(`${url}/api/food/list`); // Updated to use url
       if (response.data.success) {
         setProducts(response.data.data);
       }
@@ -117,8 +116,9 @@ const FoodContextProvider = (props) => {
   useEffect(() => {
     async function loadData() {
       await fetchProductsList();
-      if (localStorage.getItem("token")) {
-        setToken(localStorage.getItem("token"));
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken);
       }
     }
     loadData();
@@ -133,11 +133,11 @@ const FoodContextProvider = (props) => {
     updateQuantity,
     clearCart,
     getCartCount,
-    orders, // Added this so Orders.jsx can access the state
+    orders,
     getUserOrders,
     setCartItems,
     getCartAmount,
-    url: backendUrl,
+    url, // Matches the key used in Login.jsx
     token,
     setToken,
   };
