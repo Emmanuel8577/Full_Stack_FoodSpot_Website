@@ -1,5 +1,6 @@
 🍔 FoodSpot: Enterprise-Grade MERN EcosystemFoodSpot is a production-ready, full-stack food commerce platform. 
-It is engineered to handle high-performance demands using Redis for caching, secure identity management via Google OAuth 2.0, and automated multi-channel customer communications.
+It is engineered to handle high-performance demands using Redis for caching, 
+secure identity management via Google OAuth 2.0, and automated multi-channel customer communications.
 
 🏗️ System ArchitectureThe application is built on a decoupled architecture, ensuring that the customer storefront, administrative suite, and backend logic can scale independently.
 
@@ -43,14 +44,23 @@ Clone the RepositoryBashgit clone https://github.com/Emmanuel8577/Full_Stack_Foo
 cd Full_Stack_FoodSpot_Website
 
 2. Environment ConfigurationCreate a .env file in the backend folder and populate it with your credentials:Code snippetPORT=4000
+
 MONGODB_URI=your_mongodb_uri
+
 REDIS_URL=your_redis_url
+
 STRIPE_SECRET_KEY=your_stripe_secret
+
 RESEND_API_KEY=your_resend_api_key
+
 TWILIO_SID=your_twilio_sid
+
 TWILIO_AUTH_TOKEN=your_twilio_token
+
 GOOGLE_CLIENT_ID=your_google_id
+
 CLOUDINARY_URL=your_cloudinary_url
+
 3. Install DependenciesBash# Backend
 cd backend && npm install
 
@@ -59,9 +69,17 @@ cd ../frontend && npm install
 
 # Admin
 cd ../admin && npm install
+
 4. Run with DockerBashdocker-compose up --build
+
 🛡️ Security NoteThis project utilizes GITHUB PUSH PROTECTION. Ensure that all 
+
 .env files are included in your 
+
 .gitignore to prevent secret leaks. 
+
 All credentials mentioned in the documentation must be treated as environment variables and never hardcoded.
-👤 DeveloperEmmanuel Edache AdikwuFull-Stack Software Engineer | Backend Auth Lead | CAC SpecialistFinal
+
+👤 Developer
+
+Emmanuel Edache Adikwu Full-Stack Software Engineer | Backend Auth Lead | CAC SpecialistFinal
