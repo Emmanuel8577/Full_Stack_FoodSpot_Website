@@ -21,11 +21,12 @@ connectCloudinary();
 
 // Middleware
 app.use(express.json());
+// backend/server.js
 app.use(cors({
   origin: [
-    "https://foodspot-frontend.onrender.com",
-    "https://foodspot-admin.onrender.com",
-    "http://localhost:5173" // Keep this for local testing
+    "https://food-spot-two.vercel.app",
+    "https://foodspot-admin-omega.vercel.app",
+    "http://localhost:5173" // for local testing
   ],
   credentials: true
 }));
