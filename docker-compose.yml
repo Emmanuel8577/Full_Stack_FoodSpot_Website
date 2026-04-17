@@ -1,20 +1,23 @@
 services:
   backend:
     build: ./backend
+    image: emmanuel8577/foodspot-backend:latest
     ports:
       - "4000:4000"
     env_file: ./backend/.env
     
   frontend:
     build: ./frontend
+    image: emmanuel8577/foodspot-frontend:latest
     ports:
-      - "5173:80" # Maps local port 5173 to Nginx port 80
+      - "5173:80" 
     depends_on:
       - backend
 
   admin:
     build: ./admin
+    image: emmanuel8577/foodspot-admin:latest
     ports:
-      - "5174:80" # Maps local port 5174 to Nginx port 80
+      - "5174:80" 
     depends_on:
       - backend
