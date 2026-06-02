@@ -16,31 +16,74 @@ const createToken = (id) => {
 }
 
 // --- USER REGISTRATION ---
-const registerUser = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        console.log("Attempting register for:", email); // Debug Log 1
-        const exists = await userModel.findOne({ email });
-        if (exists) {
-            return res.json({ success: false, message: "User already exists" });
-        }
-        if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Please enter a valid email" });
-        }
-        if (password.length < 8) {
-            return res.json({ success: false, message: "Please enter a strong password (min 8 characters)" });
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new userModel({ name, email, password: hashedPassword });
-        const user = await newUser.save();
-        console.log("User saved! Creating token...");
-        const token = createToken(user._id);
-        res.json({ success: true, token });
-    } catch (error) {
-        res.json({ success: false, message: error.message });
+export const registerUser = async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    const exists = await userModel.findOne({ email });
+    if (exists) {
+      return res.json({ success: false, message: "User already exists" });
     }
-}
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Generate a unique 6-character recovery key
+    const recoveryKey = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    const newUser = new userModel({
+      name,
+      email,
+      password: hashedPassword,
+      recoveryKey: recoveryKey, // Saved in DB
+    });
+
+    const user = await newUser.save();
+    const token = createToken(user._id);
+
+    // Send the token AND recoveryKey back to the frontend
+    res.json({ 
+      success: true, 
+      token, 
+      recoveryKey, 
+      message: "Keep your recovery key safe!" 
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Registration failed" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { email, recoveryKey, newPassword } = req.body;
+  try {
+    // Find user by email
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User does not exist" });
+    }
+
+    // Verify recovery key (Case-insensitive check)
+    if (user.recoveryKey !== recoveryKey.toUpperCase()) {
+      return res.json({ success: false, message: "Invalid Secret Recovery Key" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password in DB
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.json({ success: true, message: "Password updated successfully! You can now log in." });
+
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Error resetting password" });
+  }
+};
 
 // --- USER LOGIN ---
 const loginUser = async (req, res) => {
@@ -79,6 +122,37 @@ const adminLogin = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+
+export const googleAuthController = async (req, res) => {
+    const { name, email, googleId } = req.body;
+    try {
+        // Find if user already exists
+        let user = await userModel.findOne({ email });
+
+        if (!user) {
+            // Secure fallback setup for passwords on accounts registered directly via OAuth
+            const randomPassword = Math.random().toString(36).slice(-8) + googleId.substring(0, 4);
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+            // Register new user parameters
+            user = new userModel({
+                name,
+                email,
+                password: hashedPassword
+            });
+            await user.save();
+        }
+
+        // Generate the application's JWT session token
+        const token = createToken(user._id);
+        res.json({ success: true, token });
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: "Error authenticating with Google account" });
+    }
+};
 
 // --- GET ALL USERS ---
 const getAllUsers = async (req, res) => {
@@ -132,4 +206,4 @@ const sendEmail = async (req, res) => {
 };
 
 // adminAuth is removed from here because it's in middleware/auth.js
-export { loginUser, registerUser, adminLogin, sendEmail, getAllUsers, getDashboardStats };
+export { loginUser, adminLogin, sendEmail, getAllUsers, getDashboardStats };

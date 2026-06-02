@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 
-const RENDER_EXTERNAL_URL = "https://foodspot-frontend.onrender.com/health";
+const RENDER_EXTERNAL_URL = "https://foodspot-backend.onrender.com/health";
 
 // Initialize Connections
 connectDB();
@@ -26,7 +26,8 @@ app.use(cors({
   origin: [
     "https://food-spot-two.vercel.app",
     "https://foodspot-admin-omega.vercel.app",
-    "http://localhost:5173" // for local testing
+    "http://localhost:5173",
+    "http://localhost:5174" // for local testing
   ],
   credentials: true
 }));

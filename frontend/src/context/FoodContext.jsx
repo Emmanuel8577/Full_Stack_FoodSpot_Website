@@ -9,7 +9,7 @@ const FoodContextProvider = (props) => {
   const navigate = useNavigate();
 
   // Define the base URL using Vite's environment variable
-  const url = import.meta.env.VITE_BACKEND_URL;
+  const url = import.meta.env.VITE_BACKEND_URL || "https://foodspot-backend.onrender.com";
   
   const currency = "₦";
   const [products, setProducts] = useState([]);
@@ -79,7 +79,7 @@ const FoodContextProvider = (props) => {
 
     try {
       const response = await axios.post(
-        `${url}/api/order/userorders`, // Updated to use url
+        `${url}/api/order/userorders`,
         {},
         { headers: { token } },
       );
@@ -101,9 +101,10 @@ const FoodContextProvider = (props) => {
     }
   };
 
+  // Exposed so App.jsx or pages can trigger it safely once the server is verified awake
   const fetchProductsList = async () => {
     try {
-      const response = await axios.get(`${url}/api/food/list`); // Updated to use url
+      const response = await axios.get(`${url}/api/food/list`);
       if (response.data.success) {
         setProducts(response.data.data);
       }
@@ -113,15 +114,12 @@ const FoodContextProvider = (props) => {
     }
   };
 
+  // Synchronously load the token on mount (safe to keep here)
   useEffect(() => {
-    async function loadData() {
-      await fetchProductsList();
-      const storedToken = localStorage.getItem("token");
-      if (storedToken) {
-        setToken(storedToken);
-      }
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
     }
-    loadData();
   }, []);
 
   const value = {
@@ -137,7 +135,8 @@ const FoodContextProvider = (props) => {
     getUserOrders,
     setCartItems,
     getCartAmount,
-    url, // Matches the key used in Login.jsx
+    fetchProductsList,// Added to value so App.jsx can invoke it right after waking the server
+    url,
     token,
     setToken,
   };
