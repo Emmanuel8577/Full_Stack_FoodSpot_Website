@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { HiEye, HiEyeOff } from "react-icons/hi"; 
+import { HiEye, HiEyeOff } from "react-icons/hi";
 import restaurantBg from "../../assets/images/restaurant.jpg";
 import { FoodContext } from "../../context/FoodContext";
 import axios from "axios";
@@ -9,7 +9,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login"); // "Login", "Sign Up", or "Forgot Password"
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const { token, setToken, navigate, url } = useContext(FoodContext);
 
   // Form States
@@ -23,21 +23,42 @@ const Login = () => {
     e.preventDefault();
     try {
       if (currentState === "Sign Up") {
-        const response = await axios.post(`${url}/api/user/register`, { name, email, password });
-          
+        const response = await axios.post(`${url}/api/user/register`, {
+          name,
+          email,
+          password,
+        });
+
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-          
-          // Show them their key using an alert or modal so they don't miss it
-          alert(`🎉 Account created! Write down your Secret Recovery Key to reset your password if forgotten:\n\n🔑 Key: ${response.data.recoveryKey}\n\nDo not share this key.`);
+
+          // BACKUP PARSING: Look at the root of response.data OR fallback to nested data fields
+          const finalKey =
+            response.data.recoveryKey || response.data.data?.recoveryKey;
+
+          if (finalKey) {
+            alert(
+              `🎉 Account created! Write down your Secret Recovery Key to reset your password if forgotten:\n\n🔑 Key: ${finalKey}\n\nDo not share this key.`,
+            );
+          } else {
+            // Emergency Fallback: If it's still missing, log the actual structure to the console
+            console.log("Full Backend Response Object:", response.data);
+            alert(
+              "🎉 Account created successfully! (Check terminal console to retrieve your recovery key).",
+            );
+          }
+
           toast.success("Account created successfully!");
         } else {
           toast.error(response.data.message);
         }
       } else if (currentState === "Login") {
-        const response = await axios.post(`${url}/api/user/login`, { email, password });
-        
+        const response = await axios.post(`${url}/api/user/login`, {
+          email,
+          password,
+        });
+
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
@@ -47,10 +68,10 @@ const Login = () => {
         }
       } else if (currentState === "Forgot Password") {
         // CALL RESET PASSWORD ENDPOINT
-        const response = await axios.post(`${url}/api/user/reset-password`, { 
-          email, 
-          recoveryKey, 
-          newPassword 
+        const response = await axios.post(`${url}/api/user/reset-password`, {
+          email,
+          recoveryKey,
+          newPassword,
         });
 
         if (response.data.success) {
@@ -74,10 +95,16 @@ const Login = () => {
       try {
         const googleUserRes = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
-          { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
+          {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+          },
         );
         const { name, email, sub } = googleUserRes.data;
-        const response = await axios.post(`${url}/api/user/google-auth`, { name, email, googleId: sub });
+        const response = await axios.post(`${url}/api/user/google-auth`, {
+          name,
+          email,
+          googleId: sub,
+        });
 
         if (response.data.success) {
           setToken(response.data.token);
@@ -201,14 +228,14 @@ const Login = () => {
         {/* TOGGLE NAVIGATION LINKS */}
         <div className="w-full flex justify-between text-sm text-gray-500 px-1">
           {currentState === "Login" ? (
-            <p 
+            <p
               onClick={() => setCurrentState("Forgot Password")}
               className="cursor-pointer hover:text-orange-600 transition-colors font-medium"
             >
               Forgot Password?
             </p>
           ) : (
-            <p 
+            <p
               onClick={() => setCurrentState("Login")}
               className="cursor-pointer hover:text-orange-600 transition-colors font-medium"
             >
@@ -238,7 +265,11 @@ const Login = () => {
           type="submit"
           className="w-full bg-orange-600 text-white font-black py-4 rounded-xl hover:bg-orange-700 active:scale-95 transition-all mt-4 text-lg shadow-lg uppercase tracking-widest"
         >
-          {currentState === "Login" ? "Sign In" : currentState === "Sign Up" ? "Join Now" : "Update Password"}
+          {currentState === "Login"
+            ? "Sign In"
+            : currentState === "Sign Up"
+              ? "Join Now"
+              : "Update Password"}
         </button>
 
         {/* OAUTH AREA (HIDDEN DURING PASSWORD RESETS TO KEEP UI CLEAN) */}

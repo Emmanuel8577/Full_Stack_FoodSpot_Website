@@ -126,34 +126,40 @@ const adminLogin = async (req, res) => {
 export const googleAuthController = async (req, res) => {
     const { name, email, googleId } = req.body;
     try {
-        // Find if user already exists
         let user = await userModel.findOne({ email });
 
         if (!user) {
-            // Secure fallback setup for passwords on accounts registered directly via OAuth
             const randomPassword = Math.random().toString(36).slice(-8) + googleId.substring(0, 4);
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
-            // Register new user parameters
+            // FIXED: Generate a recovery key for OAuth users too!
+            const recoveryKey = Math.random().toString(36).substring(2, 8).toUpperCase();
+
             user = new userModel({
                 name,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                recoveryKey: recoveryKey // Added this parameter
             });
             await user.save();
         }
 
-        // Generate the application's JWT session token
         const token = createToken(user._id);
-        res.json({ success: true, token });
+        
+        // OPTIONAL FLAGGING: If you want to alert Google users of their key, send it here
+        res.json({ 
+            success: true, 
+            token, 
+            recoveryKey: user.recoveryKey, 
+            message: "Google Authentication successful!" 
+        });
 
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: "Error authenticating with Google account" });
     }
 };
-
 // --- GET ALL USERS ---
 const getAllUsers = async (req, res) => {
     try {
@@ -205,5 +211,11 @@ const sendEmail = async (req, res) => {
     }
 };
 
-// adminAuth is removed from here because it's in middleware/auth.js
-export { loginUser, adminLogin, sendEmail, getAllUsers, getDashboardStats };
+export { 
+  loginUser, 
+  adminLogin, 
+  sendEmail, 
+  getAllUsers, 
+  getDashboardStats, 
+  googleAuthController 
+};

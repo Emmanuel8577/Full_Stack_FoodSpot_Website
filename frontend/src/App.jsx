@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import NavBar from './components/NavBar/NavBar'
 import Home from './pages/Home/Home'
 import Login from './pages/Login/Login'
@@ -9,46 +9,15 @@ import { Routes, Route } from "react-router-dom"
 import Footer from './components/Footer/Footer'
 import { ToastContainer } from 'react-toastify'
 import Verify from './components/Verify'
-
 import { FoodContext } from './context/FoodContext'
-import ServerLoader from './components/ServerLoader'
-import axios from 'axios'
 
 const App = () => {
-  const [isServerLoading, setIsServerLoading] = useState(true);
-  
-  // FIXED: Ensure fetchProductsList is properly pulled from your context here
-  const { url, fetchProductsList } = useContext(FoodContext);
+  const { fetchProductsList } = useContext(FoodContext);
 
+  // Fetch products silently in the background when the app loads
   useEffect(() => {
-    const wakeUpServer = async () => {
-      try {
-        // 1. Ping the backend to check if it's awake
-        await axios.get(`${url}/health`);
-        
-        // 2. Load the catalog data instantly now that the server is warm
-        await fetchProductsList();
-        
-        // 3. Take down the server spinner screen
-        setIsServerLoading(false); 
-      } catch (error) {
-        console.error("Error waking up server:", error);
-        setIsServerLoading(false); // Fallback to let user see UI if a timeout happens
-      }
-    };
-
-    wakeUpServer();
-  }, [url, fetchProductsList]); // FIXED: Added fetchProductsList to the dependency array
-
-  // Render the loader exclusively if the backend is waking up
-  if (isServerLoading) {
-    return (
-      <>
-        <ToastContainer />
-        <ServerLoader />
-      </>
-    );
-  }
+    fetchProductsList();
+  }, [fetchProductsList]);
 
   return (
     <div>
