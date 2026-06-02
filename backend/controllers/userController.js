@@ -129,25 +129,29 @@ export const googleAuthController = async (req, res) => {
         let user = await userModel.findOne({ email });
 
         if (!user) {
+            // Flow A: Completely new user registering via OAuth
             const randomPassword = Math.random().toString(36).slice(-8) + googleId.substring(0, 4);
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-            // FIXED: Generate a recovery key for OAuth users too!
             const recoveryKey = Math.random().toString(36).substring(2, 8).toUpperCase();
 
             user = new userModel({
                 name,
                 email,
                 password: hashedPassword,
-                recoveryKey: recoveryKey // Added this parameter
+                recoveryKey: recoveryKey 
             });
+            await user.save();
+        } else if (!user.recoveryKey) {
+            // Flow B: Existing legacy user logging in but missing a recovery key
+            const patchKey = Math.random().toString(36).substring(2, 8).toUpperCase();
+            user.recoveryKey = patchKey;
             await user.save();
         }
 
+        // Generate the standard security JSON Web Token session profile
         const token = createToken(user._id);
         
-        // OPTIONAL FLAGGING: If you want to alert Google users of their key, send it here
         res.json({ 
             success: true, 
             token, 
@@ -156,7 +160,7 @@ export const googleAuthController = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Google Auth Controller Error:", error);
         res.json({ success: false, message: "Error authenticating with Google account" });
     }
 };
