@@ -12,6 +12,10 @@ import food11 from './images/drink2.png'
 import food12 from './images/pasta2.png'
 import food13 from './images/chicken.png'
 import food14 from './images/pizza2.png'
+import food15 from './images/Drice1.png'
+import food16 from './images/Drice2.png'
+import food17 from './images/swallow1.png'
+import food18 from './images/swallow2.png'
 import stripe_logo from './images/stripe_logo.png'
 
 export const categoryItem = [
@@ -151,6 +155,42 @@ export const product = [
         price: 160,
         image: food14,
         category: "Pizza", // Fixed from "Kids"
+        date: 1716626645448,
+    },
+    {
+        _id: "dr",
+        name: "Delicious Rice",
+        description: "A lightweight, usually knitted, pullover shirt...",
+        price: 170,
+        image: food15,
+        category: "Rice", 
+        date: 1716626645448,
+    },
+    {
+        _id: "dri",
+        name: "Delicious rice",
+        description: "A lightweight, usually knitted, pullover shirt...",
+        price: 180,
+        image: food16,
+        category: "Rice", 
+        date: 1716626645448,
+    },
+    {
+        _id: "sw",
+        name: "Italian Style Thin Crust Pizza",
+        description: "A lightweight, usually knitted, pullover shirt...",
+        price: 190,
+        image: food17,
+        category: "Swallow", 
+        date: 1716626645448,
+    },
+    {
+        _id: "swa",
+        name: "Italian Style Thin Crust Pizza",
+        description: "A lightweight, usually knitted, pullover shirt...",
+        price: 200,
+        image: food18,
+        category: "Swallow",
         date: 1716626645448,
     },
 ];

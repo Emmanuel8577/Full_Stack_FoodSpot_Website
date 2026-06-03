@@ -220,6 +220,5 @@ export {
   adminLogin, 
   sendEmail, 
   getAllUsers, 
-  getDashboardStats, 
-  googleAuthController 
+  getDashboardStats
 };

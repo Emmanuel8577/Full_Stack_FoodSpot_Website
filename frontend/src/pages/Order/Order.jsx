@@ -26,7 +26,6 @@ const Orders = () => {
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(28);
-    // Centralized Name
     doc.text("CHUK'S KITCHEN", 105, 25, { align: "center" });
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
@@ -103,7 +102,6 @@ const Orders = () => {
 
         <div className="space-y-6">
           {orders && orders.length > 0 ? (
-            // Reversing the array here ensures the latest orders are on top
             [...orders].reverse().map((order, index) => (
               <div key={index} className="bg-white border p-8 rounded-[2.5rem] shadow-sm flex flex-col lg:flex-row items-center justify-between gap-8">
                 

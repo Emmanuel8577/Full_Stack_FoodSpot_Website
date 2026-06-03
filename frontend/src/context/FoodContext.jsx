@@ -47,6 +47,15 @@ const FoodContextProvider = (props) => {
     });
   };
 
+  // ADDED: Simple explicit removeFromCart function to drop quantity straight to 0 (Unselect)
+  const removeFromCart = (itemId) => {
+    updateQuantity(itemId, 0);
+    toast.info("Removed from cart", {
+      position: "top-right",
+      autoClose: 1500,
+    });
+  };
+
   const clearCart = () => {
     setCartItems({});
     localStorage.removeItem("chuks_food_cart");
@@ -101,7 +110,6 @@ const FoodContextProvider = (props) => {
     }
   };
 
-  // Exposed so App.jsx or pages can trigger it safely once the server is verified awake
   const fetchProductsList = async () => {
     try {
       const response = await axios.get(`${url}/api/food/list`);
@@ -114,7 +122,7 @@ const FoodContextProvider = (props) => {
     }
   };
 
-  // Synchronously load the token on mount (safe to keep here)
+  // Synchronously load the token on mount
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
@@ -127,6 +135,7 @@ const FoodContextProvider = (props) => {
     currency,
     cartItems,
     addToCart,
+    removeFromCart, // EXPOSED: Included here so FoodCollection component can successfully toggle it off
     navigate,
     updateQuantity,
     clearCart,
@@ -135,7 +144,7 @@ const FoodContextProvider = (props) => {
     getUserOrders,
     setCartItems,
     getCartAmount,
-    fetchProductsList,// Added to value so App.jsx can invoke it right after waking the server
+    fetchProductsList,
     url,
     token,
     setToken,

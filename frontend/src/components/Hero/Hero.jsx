@@ -6,6 +6,14 @@ import { MdPayment } from "react-icons/md"
 import { FiSend } from 'react-icons/fi'
 
 const Hero = () => {
+  // Smooth scroll handler function
+  const scrollToMenu = () => {
+    const menuSection = document.getElementById('menu-section');
+    if (menuSection) {
+      menuSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="relative py-12 lg:py-24 overflow-hidden">
       
@@ -47,7 +55,8 @@ const Hero = () => {
               Join the FoodSport revolution. Professional nutrition meets world-class taste. Get the fuel you need for your active lifestyle.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
-              <button className="bg-brand-red text-white px-10 py-5 rounded-full font-bold text-xl hover:bg-red-700 transition-all transform hover:scale-110 shadow-2xl active:scale-95">
+              {/* CONNECTED: Added onClick listener here */}
+              <button onClick={scrollToMenu} className="bg-brand-red text-white px-10 py-5 rounded-full font-bold text-xl hover:bg-red-700 transition-all transform hover:scale-110 shadow-2xl active:scale-95">
                 Explore Our Menu
               </button>
               <button className="bg-white/50 backdrop-blur-md border-2 border-gray-200 text-gray-800 px-10 py-5 rounded-full font-bold text-xl hover:border-brand-red hover:text-brand-red transition-all shadow-md">

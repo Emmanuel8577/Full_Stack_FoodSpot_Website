@@ -32,7 +32,7 @@ const Add = ({ url, token }) => {
         headers: { token },
       });
       if (response.data.success) {
-        setData({ name: "", description: "", price: "", category: "Jollof" });
+        setData({ name: "", description: "", price: "", category: "Swallow" });
         setImage(false);
         toast.success(response.data.message);
       } else {

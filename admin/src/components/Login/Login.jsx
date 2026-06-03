@@ -41,7 +41,7 @@ const Login = ({ setToken }) => {
           <h1 className='text-3xl font-black text-gray-900 uppercase italic tracking-tighter'>
             Admin <span className='text-orange-600'>Panel</span>
           </h1>
-          <p className='text-gray-400 text-sm font-medium mt-2'>Chuks Kitchen Management</p>
+          <p className='text-gray-400 text-sm font-medium mt-2'>Foodie Kitchen Management</p>
         </div>
         
         <form onSubmit={onSubmitHandler} className='flex flex-col gap-4'>

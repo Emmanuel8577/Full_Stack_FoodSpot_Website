@@ -24,7 +24,7 @@ const Navbar = ({ setToken }) => {
         <div className="hidden sm:flex items-center gap-2">
           <div className="text-right">
             <p className="text-xs font-bold text-gray-800 leading-none">
-              Chuks Admin
+              FoodSpot Admin
             </p>
             <p className="text-[10px] text-green-500 font-medium">Active Now</p>
           </div>
