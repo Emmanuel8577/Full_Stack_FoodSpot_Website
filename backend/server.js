@@ -67,3 +67,6 @@ const keepAlive = () => {
 if (process.env.NODE_ENV === 'production') {
   keepAlive();
 }
+
+
+module.exports = app;
